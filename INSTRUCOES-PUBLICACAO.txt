@@ -1,0 +1,35 @@
+TROPA DOS BUIÚS — PACOTE COMPLETO
+
+Este ZIP contém o site completo já com o jogo "A Fuga da ETEC" cadastrado.
+
+COMO PUBLICAR SEM APAGAR NADA MANUALMENTE:
+1. Extraia este ZIP no computador.
+2. Abra https://github.com/GustavexR/tropa-dos-buius
+3. Clique em Add file > Upload files.
+4. Abra a pasta extraída e selecione TODO O CONTEÚDO que está dentro dela:
+   index.html, episodio.html, README.md e as pastas assets, data e jogos.
+   Não envie a pasta externa "tropa-dos-buius-completo" como uma pasta dentro do repositório.
+5. Arraste os itens selecionados para a área de upload do GitHub.
+6. Se o GitHub avisar que arquivos com o mesmo nome já existem, confirme a atualização/substituição.
+7. Clique em Commit changes.
+
+IMPORTANTE:
+- Não é necessário excluir o repositório nem apagar arquivos um por um.
+- Os arquivos com os mesmos caminhos serão atualizados; novos arquivos/pastas serão adicionados.
+- O arquivo episodio.html (sem acento) é o nome correto usado pelos links do site.
+- Se existir um arquivo antigo chamado "episódio.html" (com acento), ele pode ficar lá; não é usado pelo site.
+- Não apague a pasta assets existente: o pacote já inclui os arquivos do site e a nova capa em assets/capas.
+- Mantenha o GitHub Pages configurado em Deploy from a branch > main > /(root).
+
+ENDEREÇO DO SITE:
+https://gustavexr.github.io/tropa-dos-buius/
+
+ENDEREÇO DO JOGO:
+https://gustavexr.github.io/tropa-dos-buius/jogos/fuga-da-etec/
+
+CONTROLES DO JOGO:
+A / seta esquerda: andar para a esquerda
+D / seta direita: andar para a direita
+Espaço: pular
+E ou Espaço: avançar diálogo / interagir
+ESC: pausar
