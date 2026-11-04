@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 525">
+<rect width="700" height="525" fill="#73B9DF"/>
+<circle cx="565" cy="92" r="48" fill="#FFF6E6"/>
+<path d="M0 390 Q150 300 300 390 T700 370 V525 H0Z" fill="#F5BD45"/>
+<path d="M0 445 Q180 370 350 445 T700 420 V525 H0Z" fill="#F18A43"/>
+<g stroke="#332719" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+<g transform="translate(115 190)"><circle cx="95" cy="75" r="65" fill="#FFF6E6"/><path d="M40 45 Q95 -5 150 45" fill="#F5BD45"/><circle cx="75" cy="75" r="7" fill="#332719"/><circle cx="115" cy="75" r="7" fill="#332719"/><path d="M78 105 Q95 122 113 105" fill="none"/><path d="M50 140 L35 220 M140 140 L160 220" fill="none"/></g>
+<g transform="translate(310 150)"><circle cx="95" cy="75" r="65" fill="#F5BD45"/><path d="M40 35 Q95 -12 150 35" fill="#F18A43"/><circle cx="75" cy="75" r="7" fill="#332719"/><circle cx="115" cy="75" r="7" fill="#332719"/><path d="M78 105 Q95 122 113 105" fill="none"/><path d="M50 140 L35 220 M140 140 L160 220" fill="none"/></g>
+<g transform="translate(475 215)"><circle cx="75" cy="65" r="58" fill="#FFF6E6"/><path d="M25 40 Q75 -5 125 40" fill="#73B9DF"/><circle cx="58" cy="65" r="6" fill="#332719"/><circle cx="92" cy="65" r="6" fill="#332719"/><path d="M60 92 Q75 106 90 92" fill="none"/><path d="M35 120 L25 195 M115 120 L130 195" fill="none"/></g>
+</g>
+<text x="350" y="495" font-family="Trebuchet MS, sans-serif" font-size="28" font-weight="bold" text-anchor="middle" fill="#332719">TROPA DOS BUIÚS</text>
+</svg>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F5BD45">
+  <meta name="description" content="Conheça as aventuras da Tropa dos Buiús.">
+  <title>Tropa dos Buiús</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="data/episodios.js" defer></script>
+  <script src="assets/app.js" defer></script>
+</head>
+<body>
+  <header class="topo">
+    <a class="marca" href="index.html">TROPA DOS BUIÚS</a>
+    <span class="marca-detalhe"></span>
+  </header>
+
+  <main class="conteudo">
+    <section class="banner">
+      <div class="banner-texto">
+        <span class="banner-selo">UM UNIVERSO DE AVENTURAS</span>
+        <h1>Toda história tem um começo...</h1>
+        <p>E algumas começam com uma confusão daquelas. Conheça as aventuras da Tropa dos Buiús!</p>
+        <a class="botao botao-banner" href="#historias">VER HISTÓRIAS</a>
+      </div>
+      <div class="banner-img">
+        <img src="assets/banner.svg" alt="Ilustração colorida da Tropa dos Buiús">
+      </div>
+    </section>
+
+    <section class="historias" id="historias">
+      <div class="secao-topo">
+        <div>
+          <span class="secao-etiqueta">LINHA DO TEMPO</span>
+          <h2 class="secao-titulo">Nossas histórias</h2>
+        </div>
+        <div class="setas">
+          <button class="seta" id="seta-esq" type="button" aria-label="Histórias anteriores">‹</button>
+          <button class="seta" id="seta-dir" type="button" aria-label="Próximas histórias">›</button>
+        </div>
+      </div>
+      <div class="trilho" id="trilho" aria-label="Carrossel de episódios" tabindex="0"></div>
+      <p class="vazio" id="vazio">Ainda não há episódios publicados. Volte em breve!</p>
+    </section>
+  </main>
+
+  <footer class="rodape">TROPA DOS BUIÚS <span>•</span> Feito para reunir nossas aventuras.</footer>
+</body>
+</html>
