@@ -18,7 +18,7 @@ window.TROPA_EPISODIOS = [
     descricao: "A aventura continua do outro lado do muro! Atravesse a passarela, enfrente desafios e explore o centro de Santo André com a tropa.",
     capa: "assets/banner.svg",
     texto: "Depois de atravessar o muro, a aventura continua. Junte-se a Trindade, Neves, Cardoso, Luz e toda a tropa em uma jornada pela passarela e pelas ruas do centro de Santo André, até chegar à Oliveira Lima.",
-    jogo: "jogos/oliveira-lima-corrigido/partedois.html",
+    jogo: "https://mellow-kitsune-b65a03.netlify.app/",
     publicado: true
   }
 ];
