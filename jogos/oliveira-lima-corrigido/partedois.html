@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Oliveira Lima — Tropa dos Buiús</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#10131d;font-family:"Trebuchet MS",Arial,sans-serif;touch-action:none}
+#wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,177.7778vh);aspect-ratio:16/9;background:#111;overflow:hidden;box-shadow:0 0 35px #000}
+canvas{display:block;width:100%;height:100%;background:#8ccce8}
+.overlay{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;color:white;padding:4%;background:linear-gradient(#101827bb,#101827dd)}
+.hidden{display:none!important}
+h1{font-size:clamp(26px,6vw,66px);line-height:1.02;margin:0;color:#ffd23f;-webkit-text-stroke:2px #111;text-shadow:0 5px #000}
+h2{font-size:clamp(17px,3vw,32px);margin:8px 0 24px;color:white;-webkit-text-stroke:1px #111}
+p{font-size:clamp(13px,1.8vw,20px);line-height:1.45;max-width:760px}
+button{font: bold clamp(13px,1.6vw,20px) "Trebuchet MS",sans-serif;border:3px solid #111;border-radius:12px;padding:12px 22px;background:#ffd23f;color:#111;box-shadow:0 4px #000;cursor:pointer;touch-action:manipulation}
+button:active{transform:translateY(3px);box-shadow:0 1px #000}
+.row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+#topBtns{position:absolute;right:10px;top:9px;display:flex;gap:7px;z-index:20}
+#topBtns button{font-size:12px;padding:6px 10px;border-width:2px}
+#touch{position:absolute;z-index:25;inset:auto 0 12px 0;display:none;justify-content:space-between;align-items:end;padding:0 15px;pointer-events:none}
+#touch.show{display:flex}
+.pad{display:flex;gap:10px;pointer-events:auto}
+.touchbtn{width:58px;height:58px;border-radius:50%;padding:0;background:#17233ddd;color:white;border:3px solid #fff;font-size:25px;box-shadow:0 3px #0009}
+#touchRight{display:flex;gap:10px;pointer-events:auto}
+#battleLayer{position:absolute;inset:0;z-index:15;pointer-events:none}
+.ball{position:absolute;width:clamp(32px,5vw,52px);height:clamp(32px,5vw,52px);border-radius:50%;background:radial-gradient(circle at 32% 25%,#ffb0a5,#ed2525 45%,#8c0000);border:3px solid #560000;box-shadow:0 0 0 4px #ffffff55,0 4px 9px #0008;pointer-events:auto;cursor:pointer;animation:pop .15s ease-out}
+@keyframes pop{from{transform:scale(.2)}to{transform:scale(1)}}
+#battleHud{position:absolute;top:9%;left:0;right:0;text-align:center;color:#fff;font-weight:bold;text-shadow:2px 2px #000;font-size:clamp(15px,2.2vw,24px);pointer-events:none}
+#battleHud strong{color:#ffd23f}
+@media(max-width:700px){#touch{padding:0 8px 8px}.touchbtn{width:50px;height:50px}#topBtns button{font-size:10px;padding:5px 7px}}
+</style>
+</head>
+<body>
+<div id="wrap">
+<canvas id="game" width="960" height="540"></canvas>
+<div id="topBtns"><button id="touchToggle">CONTROLES: OFF</button><button id="soundToggle">🔊 SOM</button></div>
+<div id="touch">
+ <div class="pad"><button class="touchbtn" data-key="left">◀</button><button class="touchbtn" data-key="right">▶</button></div>
+ <div id="touchRight"><button class="touchbtn" data-key="jump">▲</button><button class="touchbtn" data-key="interact">E</button></div>
+</div>
+<div id="battleLayer" class="hidden"><div id="battleHud">TEMPO: <strong id="time">6.0</strong>s　 ACERTOS: <strong id="hits">0/10</strong></div><div id="balls"></div></div>
+<div id="menu" class="overlay">
+ <h1>OLIVEIRA LIMA</h1><h2>TROPA DOS BUIÚS</h2>
+ <p>Uma nova aventura começa do outro lado do muro. Atravesse a passarela, espere os semáforos, encare o desafio de reflexos e explore o centro de Santo André.</p>
+ <div class="row"><button id="play">JOGAR</button><button id="controls">CONTROLES</button></div>
+ <p style="font-size:12px;margin-top:22px">Continuação de Tropa dos Buiús</p>
+</div>
+<div id="dialog" class="overlay hidden" style="background:#0009">
+ <div style="width:min(88%,850px);background:#080a10;border:4px solid white;border-radius:16px;padding:18px;text-align:left;box-shadow:0 7px #000">
+  <div id="speaker" style="font-size:clamp(16px,2vw,23px);font-weight:bold;color:#ffd23f;margin-bottom:8px"></div>
+  <div id="words" style="font-size:clamp(14px,2vw,22px);min-height:48px;line-height:1.4"></div>
+  <div style="text-align:right;color:#ffd23f;font-size:13px;margin-top:12px">[E] continuar</div>
+ </div>
+</div>
+<div id="pause" class="overlay hidden"><h1>PAUSADO</h1><p>Pressione ESC para continuar.</p><button id="resume">VOLTAR AO JOGO</button></div>
+<div id="end" class="overlay hidden"><h1>FIM DO EPISÓDIO</h1><h2>OLIVEIRA LIMA — TROPA DOS BUIÚS</h2><p>RENATO: “Bom... chegamos.”</p><p>CONTINUA...</p><div class="row"><button id="again">JOGAR NOVAMENTE</button><button id="home">VOLTAR AO MENU</button></div></div>
+<div id="fail" class="overlay hidden"><h1 id="failTitle">VOCÊ NÃO OLHOU O SEMÁFORO!</h1><p>A tropa voltou para o começo da aventura.</p><button id="retry">RECOMEÇAR</button></div>
+</div>
+<script>
+(()=> {
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d'),W=960,H=540,GROUND=424;
+if(!ctx){document.getElementById('menu').querySelector('p').textContent='Seu navegador não conseguiu iniciar o Canvas. Abra o jogo no Chrome atualizado.';return;}
+/* Compatibilidade com navegadores Android/WebView antigos */
+if(!CanvasRenderingContext2D.prototype.roundRect){
+ CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
+  r=Math.max(0,Math.min(Number(r)||0,Math.abs(w)/2,Math.abs(h)/2));
+  this.beginPath();this.moveTo(x+r,y);this.lineTo(x+w-r,y);
+  this.quadraticCurveTo(x+w,y,x+w,y+r);this.lineTo(x+w,y+h-r);
+  this.quadraticCurveTo(x+w,y+h,x+w-r,y+h);this.lineTo(x+r,y+h);
+  this.quadraticCurveTo(x,y+h,x,y+h-r);this.lineTo(x,y+r);
+  this.quadraticCurveTo(x,y,x+r,y);this.closePath();return this;
+ };
+}
+const $=id=>document.getElementById(id);
+let audioOn=true,audio=null,keys={},touchOn=false,scene='menu',paused=false,last=0,clock=0;
+const player={x:70,y:GROUND,vy:0,dir:1,ground:true,walk:0};
+const cast=[
+ {id:'messa',name:'Messa',skin:'#e9bd98',hair:'#171313',shirt:'#e8ddc6',pants:'#dfd4bd',beard:true,stache:true,body:1.12},
+ {id:'renato',name:'Renato',skin:'#f4d1b4',hair:'#e8ad20',shirt:'#161616',pants:'#171717'},
+ {id:'arthur',name:'Arthur',skin:'#edc7a8',hair:'#171313',shirt:'#c91f25',pants:'#222b39',mustache:true,body:1.25,short:true},
+ {id:'pedro',name:'Pedroviski',skin:'#edc7a8',hair:'#211710',shirt:'#657e76',pants:'#28334a',curly:true,tall:1.12},
+ {id:'rafael',name:'Rafael',skin:'#f1c9a7',hair:'#76502e',shirt:'#f4f4f4',pants:'#17191d',glasses:true},
+ {id:'gustavo',name:'Gustavo',skin:'#bd825d',hair:'#141414',shirt:'#171717',pants:'#c9ad7c'},
+ {id:'fofinho',name:'Fofinho',skin:'#f0cbb1',hair:'#e6ad27',shirt:'#25252a',pants:'#34445b',curly:true,tall:1.06},
+ {id:'trindade',name:'Trindade',skin:'#f1c9a7',hair:'#754326',shirt:'#77736f',pants:'#68472e'},
+ {id:'neves',name:'Neves',skin:'#f0c9aa',hair:'#79502e',shirt:'#2452a0',pants:'#17191d',glasses:true},
+ {id:'cardoso',name:'Cardoso',skin:'#efc9aa',hair:'#251b19',shirt:'#151515',pants:'#171717',glasses:true,curly:true,tall:1.07},
+ {id:'luz',name:'Luz',skin:'#f1c9aa',hair:'#171717',shirt:'#f5f5f5',pants:'#f1f1f1',short:true,tall:1.04}
+];
+const followers=cast.slice(1).map((c,i)=>({x:player.x-(i+1)*38,y:GROUND,dir:1,walk:0}));
+const history=[];
+const lines=[];
+function beep(f=440,d=.08,type='square',v=.035){if(!audioOn)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();let o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(v,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+d);o.connect(g);g.connect(audio.destination);o.start();o.stop(audio.currentTime+d)}catch(e){}}
+function say(who,text,done){lines.push({who,text,done});if(lines.length===1)showLine()}
+function showLine(){if(!lines.length){$('dialog').classList.add('hidden');return}let l=lines[0];$('speaker').textContent=l.who;$('words').textContent=l.text;$('dialog').classList.remove('hidden')}
+function nextLine(){if(!lines.length)return;let l=lines.shift();beep(620,.05);if(l.done)l.done();showLine()}
+function reset(){player.x=70;player.y=GROUND;player.vy=0;player.dir=1;player.ground=true;player.walk=0;followers.forEach((f,i)=>Object.assign(f,{x:player.x-(i+1)*38,y:GROUND,dir:1,walk:0}));history.length=0;for(let i=0;i<500;i++)history.push({x:player.x-i*.01,y:GROUND,dir:1});lines.length=0;clock=0;world=0;crossing=0;battle=null;phaseMessage=0;scene='game';paused=false;['menu','end','fail','pause','dialog'].forEach(id=>$(id).classList.add('hidden'));$('battleLayer').classList.add('hidden');say('Trindade, Neves, Cardoso e Luz','Conseguimos sair também!',()=>say('Renato','Podemos ir na Oliveira Lima!',()=>say('MESSA','Então bora, tropa! Objetivo: chegue à Oliveira Lima!')))}
+let world=0,crossing=0,battle=null,phaseMessage=0,worldMax=5400,camera=0;
+function begin(){reset();beep(520,.1);if(audio)audio.resume()}
+$('play').type='button';$('controls').type='button';
+$('play').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();begin()});
+$('again').onclick=begin;$('retry').onclick=begin;$('home').onclick=()=>{scene='menu';paused=false;lines.length=0;battle=null;$('dialog').classList.add('hidden');$('battleLayer').classList.add('hidden');$('end').classList.add('hidden');$('fail').classList.add('hidden');$('pause').classList.add('hidden');$('menu').classList.remove('hidden')};
+$('controls').onclick=()=>{ $('menu').classList.add('hidden'); say('CONTROLES','A/D ou setas: andar. Espaço: pular. E: avançar diálogos. ESC: pausar. No celular, ative CONTROLES no canto superior.',()=> $('menu').classList.remove('hidden')); };
+$('resume').onclick=()=>{paused=false;$('pause').classList.add('hidden')};
+$('touchToggle').onclick=()=>{touchOn=!touchOn;$('touch').classList.toggle('show',touchOn);$('touchToggle').textContent='CONTROLES: '+(touchOn?'ON':'OFF')};
+$('soundToggle').onclick=()=>{audioOn=!audioOn;$('soundToggle').textContent=audioOn?'🔊 SOM':'🔇 MUDO'};
+$('end').querySelector('#home');
+window.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','Space','ArrowUp'].includes(e.code))e.preventDefault();keys[e.code]=true;if(e.code==='Escape'&&scene==='game'&&!battle&&!lines.length){paused=!paused;$('pause').classList.toggle('hidden',!paused)}if((e.code==='KeyE'||e.code==='Space'||e.code==='Enter')&&lines.length)nextLine();if(e.code==='Space'&&!lines.length&&!battle)jump()});
+window.addEventListener('keyup',e=>keys[e.code]=false);
+document.querySelectorAll('.touchbtn').forEach(b=>{let k=b.dataset.key;const down=e=>{e.preventDefault();keys['Touch'+k]=true;if(k==='interact'&&lines.length)nextLine();if(k==='jump'&&!lines.length&&!battle)jump()};const up=e=>{e.preventDefault();keys['Touch'+k]=false};b.addEventListener('pointerdown',e=>{down(e);try{b.setPointerCapture(e.pointerId)}catch(_){}});
+b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);b.addEventListener('lostpointercapture',up);});
+function jump(){if(player.ground){player.vy=-620;player.ground=false;beep(330,.12)}}
+function fail(msg){battle=null;$('battleLayer').classList.add('hidden');$('failTitle').textContent=msg;$('fail').classList.remove('hidden');scene='fail';beep(110,.3,'sawtooth')}
+function startBattle(){scene='battle';battle={time:6,hits:0,started:performance.now(),last:performance.now()};$('battleLayer').classList.remove('hidden');$('hits').textContent='0/10';$('time').textContent='6.0';spawnBall();beep(500,.1)}
+function spawnBall(){const layer=$('balls');layer.innerHTML='';let b=document.createElement('button');b.className='ball';b.setAttribute('aria-label','Acertar bolinha');let r=layer.getBoundingClientRect();let wr=$('wrap').getBoundingClientRect();let x=6+Math.random()*Math.max(20,wr.width-75),y=90+Math.random()*Math.max(30,wr.height-180);b.style.left=(x/wr.width*100)+'%';b.style.top=(y/wr.height*100)+'%';b.onclick=()=>{if(scene!=='battle')return;b.remove();battle.hits++;$('hits').textContent=battle.hits+'/10';beep(760,.06,'triangle');if(battle.hits>=10)winBattle();else spawnBall()};layer.appendChild(b)}
+function winBattle(){scene='game';battle=null;$('battleLayer').classList.add('hidden');$('balls').innerHTML='';say('PEDRO','Desafio concluído!',()=>say('HOMEM','AH, ESSES JOVENS DE HOJE EM DIA ESTÃO LOUCOS!',()=>{world=4200;player.x=4200;beep(850,.15)}))}
+function drawCharacter(c,x,y,dir=1,walk=0,scale=1){ctx.save();ctx.translate(x,y);ctx.scale(dir*scale*(c.body||1),scale*(c.tall||1));let swing=Math.sin(walk*10)*5;
+ctx.lineWidth=3;ctx.strokeStyle='#111';ctx.lineJoin='round';
+function rr(x,y,w,h,color,r=5){ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();ctx.stroke()}
+function circ(x,y,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();ctx.stroke()}
+rr(-12+swing,-34,10,32,c.pants);rr(3-swing,-34,10,32,c.pants);rr(-15+swing,-5,16,8,'#202027');rr(1-swing,-5,16,8,'#202027');
+rr(-16,-66,32,36,c.shirt,7);rr(-24,-63,9,27,c.skin);rr(15,-63,9,27,c.skin);
+circ(0,-84,18,c.skin);ctx.fillStyle=c.hair;ctx.beginPath();ctx.arc(0,-91,19,Math.PI,Math.PI*2);ctx.lineTo(18,-85);ctx.quadraticCurveTo(0,-72,-18,-85);ctx.fill();ctx.stroke();
+if(c.curly){for(let i=0;i<7;i++)circ(-14+i*4.6,-99+(i%2)*2,5,c.hair)}
+circ(-6,-84,2.5,'#111');circ(6,-84,2.5,'#111');
+ctx.beginPath();ctx.arc(0,-76,5,.2,Math.PI-.2);ctx.stroke();
+if(c.glasses){ctx.lineWidth=2;ctx.beginPath();ctx.arc(-6,-84,6,0,7);ctx.arc(6,-84,6,0,7);ctx.moveTo(0,-84);ctx.lineTo(1,-84);ctx.stroke()}
+if(c.beard){rr(-13,-77,7,11,'#111',3);rr(6,-77,7,11,'#111',3);rr(-8,-68,16,7,'#111',3)}
+if(c.mustache||c.stache){rr(-8,-78,16,4,'#111',2)}
+ctx.restore()}
+function drawBackground(cam){let g=ctx.createLinearGradient(0,0,0,GROUND);g.addColorStop(0,'#8ecbe8');g.addColorStop(1,'#e7e2c8');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+const wx=world;
+if(wx<900){ // muro inicial e chegada do grupo
+ctx.fillStyle='#777b80';ctx.fillRect(0,175,960,170);for(let x=0;x<960;x+=70){ctx.strokeStyle='#555';ctx.strokeRect(x,175,70,170)}ctx.fillStyle='#4c9b4b';ctx.fillRect(0,GROUND,960,116);ctx.fillStyle='#c9c2b1';ctx.fillRect(0,GROUND+15,960,100);
+}else if(wx<1900){ // passarela azul
+ctx.fillStyle='#4c5964';ctx.fillRect(0,0,960,GROUND);ctx.fillStyle='#40464b';ctx.fillRect(0,330,960,95);for(let i=0;i<7;i++){let x=(i*170-(clock*95)%1190+1190)%1190-100;ctx.fillStyle=i%2?'#e7e7e7':'#b5b5b5';ctx.fillRect(x,350,80,5);drawCar(x+30,400,0.6,i%2?'#df4545':'#e7c33b')}
+let tx=(clock*65)%1120-140;ctx.fillStyle='#168c91';ctx.fillRect(tx,366,150,34);ctx.fillStyle='#bce9ed';ctx.fillRect(tx+15,371,35,13);ctx.fillRect(tx+56,371,35,13);ctx.fillStyle='white';ctx.font='bold 11px Arial';ctx.fillText('TRÓLEBUS',tx+25,393);ctx.fillStyle='#222';ctx.beginPath();ctx.arc(tx+28,402,8,0,7);ctx.arc(tx+120,402,8,0,7);ctx.fill()
+ctx.fillStyle='#2465a9';ctx.fillRect(0,155,960,16);ctx.fillRect(0,155,960,14);ctx.fillRect(0,160,960,12);ctx.fillStyle='#2b6fae';ctx.fillRect(0,270,960,12);for(let x=0;x<1000;x+=55){ctx.fillRect(x,160,8,110);ctx.fillRect(x,260,8,12)}ctx.fillStyle='#777';ctx.fillRect(0,GROUND,960,116);ctx.fillStyle='#aaa';for(let x=0;x<960;x+=35)ctx.fillRect(x,GROUND+8,25,4);
+}else if(wx<2800){ // ruazinha de lojas
+streetBase();for(let x=-(cam%330);x<1000;x+=330){shop(x,190,290,220,['MERCADO','LANCHES','PAPELARIA'][Math.floor(Math.abs(x/330))%3])}
+}else if(wx<3600){ // travessias
+streetBase();drawCrossing(0,1);drawCrossing(460,2);
+}else if(wx<4200){streetBase();for(let x=0;x<1000;x+=270)shop(x-(cam%270),190,230,220,'COMÉRCIO');}
+else if(wx<5200){ // Oliveira Lima
+streetBase();for(let x=-(cam%250);x<1000;x+=250){shop(x,160,220,250,['LOJAS','CALÇADOS','CENTRO','MODA'][Math.floor(Math.abs(x/250))%4]);treeSimple(x+200,GROUND-15)}
+for(let i=0;i<8;i++){let px=(i*157+clock*22)%1050;drawPed(px,GROUND-4)}
+// Os três homens de vermelho, evento recorrente da rua comercial
+for(let i=0;i<3;i++){let px=610+i*62;drawRedMan(px,GROUND-5)}
+}else{streetBase();shop(210,115,560,300,'SHOPPING');ctx.fillStyle='#fff';ctx.font='bold 44px Arial';ctx.textAlign='center';ctx.fillText('SHOPPING',490,170);ctx.textAlign='left';}
+}
+function streetBase(){ctx.fillStyle='#d7e8ef';ctx.fillRect(0,0,960,GROUND);ctx.fillStyle='#55575b';ctx.fillRect(0,340,960,85);ctx.fillStyle='#f4f0dc';for(let x=0;x<960;x+=120)ctx.fillRect(x,380,55,5);ctx.fillStyle='#b9b6ae';ctx.fillRect(0,GROUND,960,116);ctx.fillStyle='#999';for(let x=0;x<960;x+=55)ctx.fillRect(x,GROUND+8,40,4)}
+function shop(x,y,w,h,label){ctx.fillStyle='#d6c5a3';ctx.fillRect(x,y,w,h);ctx.strokeStyle='#282828';ctx.lineWidth=4;ctx.strokeRect(x,y,w,h);ctx.fillStyle=['#b33b36','#315e87','#66834d'][Math.abs(Math.floor(x/200))%3];ctx.fillRect(x+8,y+10,w-16,48);ctx.fillStyle='white';ctx.font='bold 19px Arial';ctx.textAlign='center';ctx.fillText(label,x+w/2,y+41);ctx.fillStyle='#8cc9dc';ctx.fillRect(x+18,y+72,w*.42,h-90);ctx.fillRect(x+w*.53,y+72,w*.4,h-90);ctx.strokeStyle='#222';ctx.strokeRect(x+18,y+72,w*.42,h-90);ctx.strokeRect(x+w*.53,y+72,w*.4,h-90);ctx.textAlign='left'}
+function treeSimple(x,y){ctx.fillStyle='#76502c';ctx.fillRect(x-5,y-35,10,40);ctx.fillStyle='#438b48';ctx.beginPath();ctx.arc(x,y-45,24,0,7);ctx.fill();ctx.strokeStyle='#222';ctx.stroke()}
+function drawCar(x,y,s,col){ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.fillStyle=col;ctx.fillRect(0,0,120,28);ctx.fillRect(22,-18,70,20);ctx.fillStyle='#a9dce9';ctx.fillRect(30,-15,24,13);ctx.fillRect(59,-15,26,13);ctx.fillStyle='#222';for(let a of [23,93]){ctx.beginPath();ctx.arc(a,28,11,0,7);ctx.fill()}ctx.restore()}
+function drawCrossing(x,n){ctx.fillStyle='#fff';for(let i=0;i<7;i++)ctx.fillRect(x+25+i*48,330,28,90);ctx.fillStyle='#222';ctx.fillRect(x+390,115,40,130);ctx.fillStyle='#555';ctx.fillRect(x+405,245,10,85);ctx.fillStyle=(Math.floor(clock*1.4)%2===0)?'#e22':'#333';ctx.beginPath();ctx.arc(x+410,145,12,0,7);ctx.fill();ctx.fillStyle=(Math.floor(clock*1.4)%2===1)?'#2d4':'#333';ctx.beginPath();ctx.arc(x+410,205,12,0,7);ctx.fill();ctx.fillStyle='#222';ctx.fillRect(x+60,280,290,52);ctx.fillStyle='white';ctx.font='bold 20px Arial';ctx.fillText(n===1?'1º SEMÁFORO':'2º SEMÁFORO',x+80,313)}
+function drawPed(x,y){ctx.fillStyle='#222';ctx.beginPath();ctx.arc(x,y-35,9,0,7);ctx.fill();ctx.fillStyle=['#d55','#357','#282'][Math.floor(x)%3];ctx.fillRect(x-8,y-25,16,25)}
+function drawRedMan(x,y){ctx.fillStyle='#222';ctx.beginPath();ctx.arc(x,y-44,10,0,7);ctx.fill();ctx.fillStyle='#c82028';ctx.fillRect(x-11,y-34,22,27);ctx.fillStyle='white';ctx.font='bold 17px Arial';ctx.textAlign='center';ctx.fillText('★',x,y-15);ctx.fillStyle='#222';ctx.fillRect(x-9,y-7,7,12);ctx.fillRect(x+2,y-7,7,12);ctx.textAlign='left'}
+function drawWorld(){let cam=Math.max(0,player.x-330);camera=cam;drawBackground(cam); // characters
+for(let i=followers.length-1;i>=0;i--){let f=followers[i];drawCharacter(cast[i+1],f.x-cam,f.y,f.dir,f.walk,.88)}
+drawCharacter(cast[0],player.x-cam,player.y,player.dir,player.walk,1);
+}
+function updateFollowers(dt){history.unshift({x:player.x,y:player.y,dir:player.dir,walk:player.walk});if(history.length>500)history.pop();followers.forEach((f,i)=>{let target=history[Math.min(history.length-1,(i+1)*13)]||history[history.length-1];f.x+=(target.x-f.x)*Math.min(1,dt*12);f.y+=(target.y-f.y)*Math.min(1,dt*12);f.dir=target.dir;f.walk=player.walk-(i*.4)})}
+function phaseText(){let p=world<900?'ENCONTRO DO OUTRO LADO DO MURO':world<1900?'PASSARELA DE METAL AZUL':world<2800?'RUA E LOJAS':world<3600?'TRAVESSIA DOS DOIS SEMÁFOROS':world<4200?'O HOMEM QUE PEDE UM REAL':world<5200?'RUA OLIVEIRA LIMA':'CHEGADA AO SHOPPING';ctx.fillStyle='#111c';ctx.fillRect(0,0,960,43);ctx.fillStyle='#ffd23f';ctx.font='bold 18px Arial';ctx.fillText(p,18,28);ctx.fillStyle='white';ctx.textAlign='right';ctx.font='bold 15px Arial';ctx.fillText('OBJETIVO: '+(world<900?'SIGA COM A TROPA':world<1900?'ATRAVESSE A PASSARELA':world<2800?'SIGA PELA CALÇADA':world<3600?'ATRAVESSE COM SINAL VERDE':world<4200?'ENCARE A SITUAÇÃO':world<5200?'EXPLORE A OLIVEIRA LIMA':'CHEGUE À ENTRADA'),940,28);ctx.textAlign='left'}
+function update(dt){clock+=dt;if(paused||scene!=='game'||lines.length||battle)return;let dir=(keys.KeyD||keys.ArrowRight||keys.Touchright?1:0)-(keys.KeyA||keys.ArrowLeft||keys.Touchleft?1:0);if(dir){player.x+=dir*220*dt;player.dir=dir;player.walk+=dt*9}else player.walk=0;
+if((keys.Space||keys.ArrowUp||keys.Touchjump)&&player.ground)jump();
+player.vy+=1450*dt;player.y+=player.vy*dt;if(player.y>=GROUND){player.y=GROUND;player.vy=0;player.ground=true}else player.ground=false;
+player.x=Math.max(40,Math.min(worldMax,player.x));world=player.x;updateFollowers(dt);
+// two functioning pedestrian lights: green windows alternate; premature crossing resets.
+if(world>=2800&&world<3600){let crossingIndex=world<3220?1:2;let local=world<3220?world-2800:world-3220;let green=(Math.floor(clock/4)%2===1);if(local<70&&dir>0&&!green){fail('VOCÊ NÃO OLHOU O SEMÁFORO!');return}if(local>70&&local<390&&crossing!==crossingIndex&&green){crossing=crossingIndex;beep(880,.12)}}
+if(world>950&&world<1000&&phaseMessage===0){phaseMessage=1;say('Gustavo','Essa passarela é azul até demais.');}
+if(world>2550&&phaseMessage<2){phaseMessage=2;say('Messa','Agora é só atravessar com atenção.');}
+if(world>3600&&phaseMessage<3){phaseMessage=3;say('HOMEM','ME DÁ UM REAL!',()=>say('MESSA','Não, seu mendigo, sai daqui!',()=>say('HOMEM','Como é que é?!',()=>startBattle())))}
+if(world>4250&&phaseMessage<4){phaseMessage=4;say('Trindade','Olha os três caras de vermelho ali!')}
+if(world>5200&&!lines.length){say('RENATO','Bom... chegamos.',()=>{scene='end';$('end').classList.remove('hidden');beep(700,.2)})}
+}
+function draw(){ctx.clearRect(0,0,W,H);if(scene==='menu'){drawBackground(0);cast.slice(0,7).forEach((c,i)=>drawCharacter(c,130+i*105,GROUND,1,0,1));return}
+if(scene==='game'){drawWorld();phaseText();if(lines.length){ctx.fillStyle='#000e';ctx.fillRect(35,420,890,100);ctx.strokeStyle='white';ctx.lineWidth=3;ctx.strokeRect(35,420,890,100)}}
+if(scene==='battle'){drawBackground(0);ctx.fillStyle='#19202b';ctx.fillRect(0,0,W,H);ctx.fillStyle='#d5b98d';ctx.fillRect(0,390,W,150);drawCharacter(cast[3],230,420,1,clock*8,2);drawCharacter({name:'Homem',skin:'#a87556',hair:'#333',shirt:'#777',pants:'#333'},730,420,-1,clock*4,2);ctx.fillStyle='white';ctx.font='bold 30px Arial';ctx.textAlign='center';ctx.fillText('DESAFIO DE REFLEXO DO PEDRO',480,75);ctx.textAlign='left'}
+}
+function frame(now){let dt=Math.min(.033,(now-last)/1000||0);last=now;if(scene==='battle'&&battle){battle.time=Math.max(0,6-(now-battle.started)/1000);$('time').textContent=battle.time.toFixed(1);if(battle.time<=0)fail('VOCÊ DEMOROU DEMAIS!')}
+update(dt);draw();requestAnimationFrame(frame)}
+$('dialog').addEventListener('pointerdown',e=>{e.preventDefault();nextLine()});
+window.addEventListener('error',e=>{
+ const msg=(e&&e.message)||'falha no navegador';
+ const m=$('menu');m.classList.remove('hidden');
+ let p=m.querySelector('p');if(p)p.textContent='O jogo encontrou um erro: '+msg+'. Atualize o Chrome e tente novamente.';
+ console.error('Erro no jogo:',e);
+});
+document.querySelectorAll('button').forEach(b=>b.addEventListener('contextmenu',e=>e.preventDefault()));
+document.addEventListener('visibilitychange',()=>{if(document.hidden){keys={};}});
+requestAnimationFrame(frame);
+})();
+</script>
+</body></html>
