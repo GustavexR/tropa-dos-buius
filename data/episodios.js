@@ -11,5 +11,14 @@ window.TROPA_EPISODIOS = [
     texto: "A tropa dos Buiús está na ETEC Júlio de Mesquita quando decide que chegou a hora de meter o pé. Mas sair da escola não vai ser tão simples: corredores, estacionamento e um muro estão no caminho. Ajude Messa e a turma a completar a fuga!",
     jogo: "jogos/fuga-da-etec/",
     publicado: true
+  },
+  {
+    id: "oliveira-lima",
+    titulo: "Oliveira Lima — Tropa dos Buiús",
+    descricao: "A aventura continua do outro lado do muro! Atravesse a passarela, enfrente desafios e explore o centro de Santo André com a tropa.",
+    capa: "assets/banner.svg",
+    texto: "Depois de atravessar o muro, a aventura continua. Junte-se a Trindade, Neves, Cardoso, Luz e toda a tropa em uma jornada pela passarela e pelas ruas do centro de Santo André, até chegar à Oliveira Lima.",
+    jogo: "jogos/oliveira-lima-corrigido/partedois.html",
+    publicado: true
   }
 ];
