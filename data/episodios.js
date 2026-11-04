@@ -1,18 +1,15 @@
 /*
-  CADASTRO DOS EPISÓDIOS
-  Para adicionar um episódio, copie o modelo abaixo e cole dentro da lista.
-  Não apague as chaves [ ] nem coloque vírgula depois do último episódio.
-
-  {
-    id: "fuga-da-etec",
-    titulo: "Fuga da ETEC",
-    descricao: "Descrição curta que aparece no cartão da página inicial.",
-    capa: "https://endereco-da-sua-imagem.jpg",
-    texto: "Texto completo da história. Pode usar \\n para pular linha.",
-    jogo: "https://endereco-do-seu-jogo",
-    publicado: true
-  }
+  CADASTRO DOS EPISÓDIOS DA TROPA DOS BUIÚS.
+  Este arquivo já inclui o episódio "A Fuga da ETEC".
 */
 window.TROPA_EPISODIOS = [
-  // Seus episódios entram aqui.
+  {
+    id: "fuga-da-etec",
+    titulo: "A Fuga da ETEC",
+    descricao: "A tropa dos Buiús precisa escapar da ETEC. Atravesse seis fases, encontre personagens e descubra até onde essa fuga vai chegar!",
+    capa: "assets/capas/fuga-da-etec.png",
+    texto: "A tropa dos Buiús está na ETEC Júlio de Mesquita quando decide que chegou a hora de meter o pé. Mas sair da escola não vai ser tão simples: corredores, estacionamento e um muro estão no caminho. Ajude Messa e a turma a completar a fuga!",
+    jogo: "jogos/fuga-da-etec/",
+    publicado: true
+  }
 ];
